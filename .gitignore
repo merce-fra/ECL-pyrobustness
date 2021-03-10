@@ -1,0 +1,10 @@
+__pycache__
+.coverage
+.pytest_cache
+.idea
+.mutmut-cache
+.mutate-results
+htmlcov
+cov_html
+log.html
+log.txt

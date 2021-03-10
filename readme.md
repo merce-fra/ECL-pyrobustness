@@ -129,13 +129,11 @@ TODO
 
 ## Authors
 
-* **Emily Clement** - *Initial work* - [#TODO](Lien Github)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project: #TODO
+* **Emily Clement**
 
 ## License
 
-This project is licensed under #TODO - see the #TODO file for details
+This project is licensed under GPL version 3
 
 ## Acknowledgments
 

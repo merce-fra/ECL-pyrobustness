@@ -102,7 +102,8 @@ class Backtracking(object):
                  to_print: bool = False,
                  print_class=None,
                  trace_bound: int = 50,
-                 cycle_bound: int = 50):
+                 cycle_bound: int = 50,
+                 filter_opt: bool = True):
         self.ta = ta
         self.start = start
         self.strategy_opponent = strategy_opponent
@@ -114,8 +115,8 @@ class Backtracking(object):
         self.trace_bound = trace_bound
         self.cycle_bound = cycle_bound
         self.print_class = btlog.BacktrackConsoleLogger() if print_class is None else print_class
+        self.filter_opt = filter_opt
 
-    # TODO: Finished & Tested
     def goal_cond(self, current: Configuration) -> bool:
         return current.location == self.ta.goal_location
 
@@ -131,7 +132,6 @@ class Backtracking(object):
         move_interval = moves.global_interval(move)
         return move_interval.right - move_interval.left
 
-    # TODO: Finished & Tested
     # @staticmethod
     # def compute_trace_permissiveness(trace: Optional[TraceList]) -> float:
     #     """
@@ -148,7 +148,6 @@ class Backtracking(object):
     # math.inf : the initial value to start the reduction
     # reduce ( F, [a,b,c] ) returns F( F(a,b), c)
 
-    # TODO: Finished. Tested
     # @staticmethod
     # def compare_trace(trace: Trace,
     #                   other_trace: Trace) -> float:
@@ -173,7 +172,6 @@ class Backtracking(object):
         if self.to_print:
             self.print_class(part, **kwargs)
 
-    # TODO: Finished & Tested
     def apply_goal(self, trace: Trace) -> Trace:
         return trace
 
@@ -195,7 +193,6 @@ class Backtracking(object):
 
         self.check_cycle_bound(trace)
 
-    # TODO: Finished
     def filter_poss(self, possibility_move: Move, best_trace: Trace) -> bool:
         """
         Filter the possibility in order to eliminate path that can not improve
@@ -205,12 +202,15 @@ class Backtracking(object):
         :return: True if the possibility must be treated, False otherwise
         """
 
+        if not self.filter_opt:
+            # If the filter optimization is not enabled
+            return True
+
         global_interval = moves.global_interval(possibility_move)
         if global_interval.right - global_interval.left > best_trace.compute_trace_permissiveness():
             return True
         return False
 
-    # TODO: finished
     def extract_max_moves(self, current: Configuration) -> \
             List[Move]:
         """
@@ -222,7 +222,6 @@ class Backtracking(object):
         """
         return moves.moves(self.ta, current)
 
-    # TODO: finished.
     def gen_next_poss(self, current: Configuration) -> Iterator[Move]:
         """
         Return a generators of possible moves.
@@ -235,7 +234,6 @@ class Backtracking(object):
                     move=max_move, strat_sampling=self.interval_sampling_step, bound=self.bound):
                 yield sampled_moves
 
-    # TODO: finish
     # TODO: Improvement do not take **kwargs strat yet
     # TODO: change Delay into delay moves
     #  completely the trace in the _backtrack_delay function
@@ -249,7 +247,6 @@ class Backtracking(object):
         """
         return self.strategy_opponent(next_poss)
 
-    # TODO: Finished
     # TODO: get back the best strategy for the best strategy of the player.
     def _backtrack_delay(self, current: Configuration, trace: Trace,
                          move: Move) -> Iterator[Trace]:
@@ -269,7 +266,6 @@ class Backtracking(object):
                 except exceptions.CycleException:
                     continue
 
-    # TODO: Finished
     def _backtrack(self,
                    current: Configuration,
                    trace: Trace) -> Trace:
@@ -311,7 +307,7 @@ class Backtracking(object):
                     minimal_trace = future_trace.copy()
 
                 # Short circuit in case the we have a -inf trace
-                if math.isinf(permissiveness) and permissiveness < 0:
+                if self.filter_opt and math.isinf(permissiveness) and permissiveness < 0:
                     break
 
             permissiveness_interval = minimal_trace.compute_trace_permissiveness()
@@ -341,7 +337,6 @@ class Backtracking(object):
 
         return best_trace
 
-    # TODO: finished.
     def backtracking(self, to_print=False):
 
         try:

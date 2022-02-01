@@ -8,3 +8,8 @@ htmlcov
 cov_html
 log.html
 log.txt
+_build
+_templates
+*.rst
+docs
+conf.py
